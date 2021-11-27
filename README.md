@@ -12,7 +12,7 @@ Network Var Ping
 
 Rpc Ping
 1. `client` send `rpc` with time `t1 = current time`
-2. `server` send `rpc` with received time `t1`
+2. `server` reply `rpc` with received time `t1`
 3. `client` receives the `rpc` with `t1`
 4. `client` stores the difference `currentTime - t1`
 5. `client` calculates mean RTT
