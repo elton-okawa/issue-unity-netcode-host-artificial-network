@@ -10,10 +10,7 @@ public class PingRpc : NetworkBehaviour {
     [SerializeField] float pingIntervalSec = 0.5f;
     [SerializeField] Text pingText;
 
-    // Ping
-    const int bufferSize = 5;
-    float[] rttWindow = new float[bufferSize];
-    float[] pingHistory = new float[bufferSize];
+    float[] rttWindow = new float[5];
     uint pingId = 0;
 
     // Cache
@@ -40,18 +37,14 @@ public class PingRpc : NetworkBehaviour {
 
     IEnumerator PingRoutine() {
         while (true) {
-            pingHistory[pingId % pingHistory.Length] = Time.realtimeSinceStartup;
-            PingServerRpc(pingId);
-            pingId++;
-
-            pingText.text = $"{Mathf.RoundToInt(PingHelper.CalculateMeanRTT(rttWindow) * 1000)} ms";
+            PingServerRpc(Time.realtimeSinceStartup);
 
             yield return new WaitForSeconds(pingIntervalSec);
         }
     }
 
     [ServerRpc(Delivery = RpcDelivery.Unreliable, RequireOwnership = false)]
-    public void PingServerRpc(uint pingId, ServerRpcParams serverRpcParams = default) {
+    public void PingServerRpc(float sentTime, ServerRpcParams serverRpcParams = default) {
         var clientId = serverRpcParams.Receive.SenderClientId;
 
         if (!clientRpcParams.ContainsKey(clientId)) {
@@ -62,16 +55,16 @@ public class PingRpc : NetworkBehaviour {
             });
         }
 
-        PongClientRpc(pingId, clientRpcParams[clientId]);
+        PongClientRpc(sentTime, clientRpcParams[clientId]);
     }
 
     [ClientRpc(Delivery = RpcDelivery.Unreliable)]
-    public void PongClientRpc(uint receivedId, ClientRpcParams clientRpcParams = default) {
-        if (pingId >= receivedId + bufferSize) {
-            Debug.LogWarning($"[PING] Ping took too long to return (currentId: {pingId}, receivedId: {receivedId})");
-        }
+    public void PongClientRpc(float sentTime, ClientRpcParams clientRpcParams = default) {
+        var currentTime = Time.realtimeSinceStartup;
+        rttWindow[pingId % rttWindow.Length] = currentTime - sentTime;
 
-        int index = (int)(receivedId % rttWindow.Length);
-        rttWindow[index] = Time.realtimeSinceStartup - pingHistory[index];
+        pingText.text = $"{Mathf.RoundToInt(PingHelper.CalculateMeanRTT(rttWindow) * 1000)} ms";
+
+        pingId++;
     }
 }
