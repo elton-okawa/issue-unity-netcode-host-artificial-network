@@ -19,6 +19,8 @@ Rpc Ping
 6. `client` updates text
 7. Repeat `1 to 6`
 
+![image](https://user-images.githubusercontent.com/24387035/143678332-d5b1e5fe-4a6d-4241-8965-a09e8a436c44.png)
+
 # Step to reproduce
 
 1. Clone this repository
