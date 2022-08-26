@@ -7,35 +7,34 @@ using UnityEngine.UI;
 
 public class PingNetworkVar : NetworkBehaviour {
     [SerializeField] float pingIntervalSec = 0.5f;
-    [SerializeField] Text pingText;
 
+    Text pingText;
     NetworkVariable<float> time = new NetworkVariable<float>();
     float[] rttWindow = new float[5];
     uint pingId = 0;
 
-    void Start() {
-        NetworkManager.Singleton.OnClientConnectedCallback += OnConnected;
-    }
 
-    public override void OnDestroy() {
-        base.OnDestroy();
-        StopAllCoroutines();
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
 
-        if (NetworkManager.Singleton) {
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
-        }
+        if (IsLocalPlayer)
+        {
+            PingManager pingManager = FindObjectOfType<PingManager>();
+            pingText = pingManager.networkVarPingText;
 
-        if (IsClient) {
-            time.OnValueChanged -= OnValueChanged;
-        }
-    }
-
-    void OnConnected(ulong clientId) {
-        if (IsClient) {
             time.OnValueChanged += OnValueChanged;
             StartCoroutine(PingRoutine());
         }
     }
+
+    public override void OnNetworkDespawn() {
+        base.OnNetworkDespawn();
+
+        time.OnValueChanged -= OnValueChanged;
+        StopAllCoroutines();
+    }
+
 
     IEnumerator PingRoutine() {
         while (true) {
@@ -55,7 +54,7 @@ public class PingNetworkVar : NetworkBehaviour {
         pingId++;
     }
 
-    [ServerRpc(Delivery = RpcDelivery.Unreliable, RequireOwnership = false)]
+    [ServerRpc(Delivery = RpcDelivery.Unreliable)]
     void SetTimeServerRpc(float newTime) {
         time.Value = newTime;
     }
