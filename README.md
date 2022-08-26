@@ -1,7 +1,7 @@
 # Approach
 Note that both approaches differ in `step 2 and 3`
 
-Network Var Ping
+Network Var Ping (each client has a instance for it)
 1. `client` send `rpc` with time `t1 = current time`
 2. `server` changes `Network Var` with received time `t1`
 3. `client` receives the `Network Var` update with `t1`
@@ -19,16 +19,14 @@ Rpc Ping
 6. `client` updates text
 7. Repeat `1 to 6`
 
-![image](https://user-images.githubusercontent.com/24387035/143678332-d5b1e5fe-4a6d-4241-8965-a09e8a436c44.png)
-
 # Step to reproduce
 
 1. Clone this repository
-2. Open `Netcode -> Simulator Tools`
+2. Find `NetworkManager` object on scene, go to component `Unity Transport -> Debug Simulator`
 3. Set `delay` to `200` (we can leave others the default value)
 4. Open `ParrelSync -> Clones Manager`
 5. Click `Add new clone`
 6. After a while, there'll be a option called `Open in new Editor` click on it
-7. In this new editor start the game and select `Server`
+7. In this new editor start the game and select `Host`
 8. In the previous editor also start the game and select `Client`
-9. View the client editor calculated ping
+9. View both `Host` and `Client` pings
