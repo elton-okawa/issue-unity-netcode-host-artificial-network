@@ -16,23 +16,19 @@ public class PingRpc : NetworkBehaviour {
     // Cache
     Dictionary<ulong, ClientRpcParams> clientRpcParams = new Dictionary<ulong, ClientRpcParams>();
 
-    void Start() {
-        NetworkManager.Singleton.OnClientConnectedCallback += OnConnected;
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        StartCoroutine(PingRoutine());
     }
 
 
-    public override void OnDestroy() {
-        base.OnDestroy();
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+
         StopAllCoroutines();
-        if (NetworkManager.Singleton) {
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnConnected;
-        }
-    }
-
-    void OnConnected(ulong clientId) {
-        if (IsClient) {
-            StartCoroutine(PingRoutine());
-        }
     }
 
     IEnumerator PingRoutine() {
