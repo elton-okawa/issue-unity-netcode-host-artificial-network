@@ -1,4 +1,12 @@
-# Approach
+# Issue Host artificial network conditions
+
+**Expected Behavior**: both `host` and `clients` being affected by artificial network conditions
+
+**Actual Behavior**: only `clients` are affected
+
+<img src="https://user-images.githubusercontent.com/24387035/186885475-cec37d30-a6ff-4ef0-923f-a70fbfa908df.png" width="425"/> <img src="https://user-images.githubusercontent.com/24387035/186885583-a52a9dc8-f353-466c-9d37-1c7e46c238cc.png" width="425"/>
+
+## Approach
 Note that both approaches differ in `step 2 and 3`
 
 Network Var Ping (each client has a instance for it)
@@ -19,14 +27,13 @@ Rpc Ping
 6. `client` updates text
 7. Repeat `1 to 6`
 
-# Step to reproduce
+## Step to reproduce
 
 1. Clone this repository
-2. Find `NetworkManager` object on scene, go to component `Unity Transport -> Debug Simulator`
-3. Set `delay` to `200` (we can leave others the default value)
-4. Open `ParrelSync -> Clones Manager`
-5. Click `Add new clone`
-6. After a while, there'll be a option called `Open in new Editor` click on it
-7. In this new editor start the game and select `Host`
-8. In the previous editor also start the game and select `Client`
-9. View both `Host` and `Client` pings
+2. Find `NetworkManager` object on scene, go to component `Unity Transport -> Debug Simulator`. Note that `delay` is set to `100ms`
+3. Open `ParrelSync -> Clones Manager`
+4. Click `Add new clone`
+5. After a while, there'll be a option called `Open in new Editor` click on it
+6. In this new editor start the game and select `Host`
+7. In the previous editor also start the game and select `Client`
+8. View both `Host` and `Client` pings
